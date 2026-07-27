@@ -55,9 +55,9 @@ export const tracks: Track[] = [
 		spotify: 'https://open.spotify.com/track/3h5zik31hTTat9jmpCZZNC',
 	},
 	{
-		title: 'Drone Logic',
-		artist: 'Daniel Avery',
-		spotify: 'https://open.spotify.com/track/7JRN5xOUIrnI4crUMOt6X4',
+		title: 'Bluesen',
+		artist: 'Svaneborg Kardyb',
+		spotify: 'https://open.spotify.com/track/4q4emoW3IX2eHhY3sVkudj',
 	},
 	{
 		title: 'Dream 1 (before the wind blows it all away) — Pt. 8',
