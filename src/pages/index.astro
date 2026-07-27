@@ -124,10 +124,18 @@ const posts = (await getCollection('blog')).sort(
 				margin-bottom: 0.6rem;
 			}
 			.index-col a {
+				align-self: flex-start;
 				text-decoration: none;
+				transition: color 0.2s ease;
 			}
-			.index-col a:hover {
-				opacity: 0.55;
+			.index-col a:hover,
+			.index-col a:focus-visible {
+				color: var(--link-hover);
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.index-col a {
+					transition: none;
+				}
 			}
 			.empty {
 				color: var(--text-faint);

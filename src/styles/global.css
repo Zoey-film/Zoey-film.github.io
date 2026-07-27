@@ -16,6 +16,15 @@
 
 	--accent: var(--text);
 
+	/* The one accent colour — used for link hover and text selection, so
+	   changing it here changes both. */
+	--accent-red: #9a2325;
+	--link-hover: var(--accent-red);
+
+	/* Text selection */
+	--selection-bg: var(--accent-red);
+	--selection-text: #ffffff;
+
 	/* Layout — the page hugs its edges rather than centering a container. */
 	--page-margin: 14px;
 	--column: 420px; /* the reading measure, pinned left */
@@ -35,6 +44,17 @@
 
 * {
 	box-sizing: border-box;
+}
+
+/* Selection highlight. Listed separately rather than in a group selector —
+   a browser that doesn't understand one prefix would drop the whole rule. */
+::selection {
+	background: var(--selection-bg);
+	color: var(--selection-text);
+}
+::-moz-selection {
+	background: var(--selection-bg);
+	color: var(--selection-text);
 }
 
 body {
@@ -145,7 +165,8 @@ a {
 	transition: text-decoration-color 0.15s ease;
 }
 a:hover {
-	text-decoration-color: var(--text);
+	color: var(--link-hover);
+	text-decoration-color: var(--link-hover);
 }
 
 p {

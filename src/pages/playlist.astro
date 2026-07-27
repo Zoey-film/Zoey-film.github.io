@@ -1,0 +1,117 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { playlist } from '../data/playlist';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Playlist | ${SITE_TITLE}`} description="Music on rotation." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="index-bar nav-type">
+				<span>Playlist</span>
+				<span>{playlist.length} {playlist.length === 1 ? 'track' : 'tracks'}</span>
+			</div>
+
+			{
+				playlist.length > 0 ? (
+					<ol class="tracks">
+						{playlist.map((track, i) => (
+							<li>
+								<span class="num nav-type">{String(i + 1).padStart(2, '0')}</span>
+								<span class="detail">
+									{track.link ? (
+										<a class="title" href={track.link} target="_blank" rel="noopener">
+											{track.title}
+										</a>
+									) : (
+										<span class="title">{track.title}</span>
+									)}
+									<span class="artist">{track.artist}</span>
+									{track.note && <span class="note">{track.note}</span>}
+								</span>
+							</li>
+						))}
+					</ol>
+				) : (
+					<p class="empty nav-type">
+						Nothing here yet — add tracks in <code>src/data/playlist.ts</code>.
+					</p>
+				)
+			}
+		</main>
+		<Footer />
+		<style>
+			.index-bar {
+				display: flex;
+				justify-content: space-between;
+				padding: 6rem 0 1.5rem;
+				color: var(--text-muted);
+			}
+
+			.tracks {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				max-width: 640px;
+			}
+			.tracks li {
+				display: flex;
+				gap: 1.5rem;
+				padding: 1rem 0;
+				border-top: 1px solid var(--rule);
+			}
+			.num {
+				flex: none;
+				color: var(--text-faint);
+				padding-top: 0.15rem;
+			}
+			.detail {
+				display: flex;
+				flex-direction: column;
+				gap: 0.1rem;
+			}
+			.title {
+				font-family: var(--font-display);
+				font-size: 1.05rem;
+				line-height: 1.35;
+				align-self: flex-start;
+				text-decoration: none;
+				transition: color 0.2s ease;
+			}
+			a.title:hover,
+			a.title:focus-visible {
+				color: var(--link-hover);
+			}
+			.artist {
+				color: var(--text-muted);
+				font-size: 0.85rem;
+			}
+			.note {
+				color: var(--text-faint);
+				font-size: 0.8rem;
+				margin-top: 0.2rem;
+			}
+			.empty {
+				color: var(--text-faint);
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				a.title::after {
+					transition: none;
+				}
+			}
+			@media (max-width: 900px) {
+				.index-bar {
+					padding: 3rem 0 1.25rem;
+				}
+			}
+		</style>
+	</body>
+</html>
