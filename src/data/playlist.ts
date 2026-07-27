@@ -69,4 +69,34 @@ export const tracks: Track[] = [
 		artist: 'Max Richter',
 		spotify: 'https://open.spotify.com/track/1A8qD0Ygjzsby5OmXh1PTa',
 	},
+	{
+		title: 'Wendy (Chanson)',
+		artist: 'George Shearing',
+		spotify: 'https://open.spotify.com/track/1xsgZdZsSMTYNZ9YrbFKo9',
+	},
+	{
+		title: 'Parachute',
+		artist: 'Sean Ono Lennon',
+		spotify: 'https://open.spotify.com/track/1r2sFdtf7WQgwFdkqk6Bti',
+	},
+	{
+		title: 'Still Waters',
+		artist: 'Jasmine Myra',
+		spotify: 'https://open.spotify.com/track/4F5JGx0pSUIOWjQBZFxpcm',
+	},
+	{
+		title: 'Phantom Thread II',
+		artist: 'Jonny Greenwood',
+		spotify: 'https://open.spotify.com/track/1RFsJY0mNqggs534WUcKUV',
+	},
+	{
+		title: 'Dear Mary',
+		artist: 'Steve Miller Band',
+		spotify: 'https://open.spotify.com/track/7rEnIt7Ezevnlyj35gHjX8',
+	},
+	{
+		title: 'All The Things You Are — Instrumental',
+		artist: 'Lionel Hampton',
+		spotify: 'https://open.spotify.com/track/7oJAo55YTdecMgMiS1t6sh',
+	},
 ];
