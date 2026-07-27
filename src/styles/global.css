@@ -20,6 +20,9 @@
 	--page-margin: 14px;
 	--column: 420px; /* the reading measure, pinned left */
 	--nav-col: 210px; /* masthead column pitch */
+	/* Fallback only. Header.astro overwrites this with the measured height on
+	   load, on resize, and once webfonts settle. */
+	--header-h: 74px;
 
 	/* Type */
 	--size-nav: 12px;
@@ -49,8 +52,9 @@ body {
 	font-synthesis: none;
 }
 
+/* Reserves the space the fixed header no longer occupies in the flow. */
 main {
-	padding: 0 var(--page-margin) 8rem;
+	padding: var(--header-h) var(--page-margin) 8rem;
 }
 
 /* The narrow reading column — left-anchored, never centered. */

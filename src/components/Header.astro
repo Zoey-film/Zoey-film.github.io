@@ -3,7 +3,7 @@ import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 ---
 
-<header class="nav-type">
+<header class="nav-type" data-header>
 	<a class="wordmark" href="/">{SITE_TITLE}</a>
 	<nav class="nav-columns">
 		<div class="col">
@@ -21,12 +21,31 @@ import HeaderLink from './HeaderLink.astro';
 	</div>
 </header>
 <style>
+	/* Lifted out of the document flow so it floats over the page rather than
+	   pushing it down. `--header-h` in global.css reserves the equivalent
+	   space at the top of <main>. */
 	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		background: var(--bg);
 		display: flex;
 		align-items: flex-start;
 		gap: var(--nav-col);
-		padding: 14px var(--page-margin) 0;
+		padding: 14px var(--page-margin) 14px;
+		transition: transform 0.3s ease;
 	}
+	header.is-hidden {
+		transform: translateY(-100%);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		header {
+			transition: none;
+		}
+	}
+
 	.wordmark {
 		letter-spacing: 0.22em;
 		text-decoration: none;
@@ -78,3 +97,55 @@ import HeaderLink from './HeaderLink.astro';
 		}
 	}
 </style>
+
+<script>
+	const header = document.querySelector<HTMLElement>('[data-header]');
+
+	if (header) {
+		// Publish the real measured height so <main> reserves exactly the right
+		// space. The header wraps to a taller layout on narrow screens, so a
+		// hardcoded value would be wrong at some widths.
+		const syncHeight = () => {
+			document.documentElement.style.setProperty('--header-h', `${header.offsetHeight}px`);
+		};
+		syncHeight();
+		window.addEventListener('resize', syncHeight, { passive: true });
+		if (document.fonts) document.fonts.ready.then(syncHeight);
+
+		// Ignore sub-pixel jitter and the rubber-band overscroll at the very top,
+		// both of which would otherwise flicker the header.
+		const DELTA = 6;
+		const REVEAL_ABOVE = 90;
+
+		let lastY = window.scrollY;
+		let ticking = false;
+
+		const update = () => {
+			ticking = false;
+			const y = window.scrollY;
+
+			if (Math.abs(y - lastY) < DELTA) return;
+
+			// Always visible near the top, regardless of direction.
+			if (y < REVEAL_ABOVE) header.classList.remove('is-hidden');
+			else if (y > lastY) header.classList.add('is-hidden');
+			else header.classList.remove('is-hidden');
+
+			lastY = y;
+		};
+
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!ticking) {
+					ticking = true;
+					requestAnimationFrame(update);
+				}
+			},
+			{ passive: true },
+		);
+
+		// Keyboard users tabbing into a hidden link need it brought back.
+		header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
+	}
+</script>
