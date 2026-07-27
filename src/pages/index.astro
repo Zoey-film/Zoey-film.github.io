@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { projects } from '../data/projects';
+import { social } from '../data/social';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -44,7 +45,8 @@ const posts = (await getCollection('blog')).sort(
 				</p>
 			</section>
 
-			<!-- Index: two quiet columns of links, set in the nav type. -->
+			<!-- Index: quiet columns of links, set in the nav type. Each link shows
+			     only its label — the URL lives in the href. -->
 			<section class="index">
 				<div class="index-col nav-type">
 					<span class="index-head">Projects</span>
@@ -60,6 +62,16 @@ const posts = (await getCollection('blog')).sort(
 					<span class="index-head">Writing</span>
 					{posts.slice(0, 6).map((post) => <a href={`/blog/${post.id}/`}>{post.data.title}</a>)}
 					{posts.length === 0 && <span class="empty">Nothing published yet</span>}
+				</div>
+				<div class="index-col nav-type">
+					<span class="index-head">Social</span>
+					{
+						social.map((item) => (
+							<a href={item.href} target="_blank" rel="noopener me">
+								{item.label}
+							</a>
+						))
+					}
 				</div>
 			</section>
 		</main>
@@ -104,11 +116,12 @@ const posts = (await getCollection('blog')).sort(
 			.index-col {
 				display: flex;
 				flex-direction: column;
+				gap: 0.9rem;
 				min-width: 180px;
 			}
 			.index-head {
 				color: var(--text-faint);
-				margin-bottom: 0.5rem;
+				margin-bottom: 0.6rem;
 			}
 			.index-col a {
 				text-decoration: none;
