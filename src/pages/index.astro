@@ -8,10 +8,28 @@ import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { projects } from '../data/projects';
 import { social } from '../data/social';
+import { externalWriting } from '../data/writing';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// Local posts and pieces published elsewhere sit in one list, newest first.
+// Entries without a date sort to the end.
+const writing = [
+	...posts.map((p) => ({
+		title: p.data.title,
+		href: `/blog/${p.id}/`,
+		time: p.data.pubDate.valueOf(),
+		external: false,
+	})),
+	...externalWriting.map((p) => ({
+		title: p.title,
+		href: p.href,
+		time: p.date ? new Date(p.date).valueOf() : -Infinity,
+		external: true,
+	})),
+].sort((a, b) => b.time - a.time);
 ---
 
 <!doctype html>
@@ -60,8 +78,17 @@ const posts = (await getCollection('blog')).sort(
 				</div>
 				<div class="index-col nav-type">
 					<span class="index-head">Writing</span>
-					{posts.slice(0, 6).map((post) => <a href={`/blog/${post.id}/`}>{post.data.title}</a>)}
-					{posts.length === 0 && <span class="empty">Nothing published yet</span>}
+					{
+						writing.slice(0, 6).map((item) => (
+							<a
+								href={item.href}
+								{...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
+							>
+								{item.title}
+							</a>
+						))
+					}
+					{writing.length === 0 && <span class="empty">Nothing published yet</span>}
 				</div>
 				<div class="index-col nav-type">
 					<span class="index-head">Social</span>

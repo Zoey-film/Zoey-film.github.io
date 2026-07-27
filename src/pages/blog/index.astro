@@ -5,6 +5,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_TITLE } from '../../consts';
+import { externalWriting } from '../../data/writing';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -15,6 +16,30 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
 	month: 'short',
 	day: 'numeric',
 });
+
+// Local posts plus pieces published elsewhere, newest first.
+const entries = [
+	...posts.map((p) => ({
+		title: p.data.title,
+		href: `/blog/${p.id}/`,
+		kicker: dateFormat.format(p.data.pubDate),
+		note: p.data.description,
+		image: p.data.heroImage,
+		time: p.data.pubDate.valueOf(),
+		external: false,
+	})),
+	...externalWriting.map((p) => ({
+		title: p.title,
+		href: p.href,
+		kicker: [p.publication, p.date && dateFormat.format(new Date(p.date))]
+			.filter(Boolean)
+			.join(' · '),
+		note: p.description,
+		image: undefined,
+		time: p.date ? new Date(p.date).valueOf() : -Infinity,
+		external: true,
+	})),
+].sort((a, b) => b.time - a.time);
 ---
 
 <!doctype html>
@@ -27,22 +52,23 @@ const dateFormat = new Intl.DateTimeFormat('en-US', {
 		<main>
 			<div class="index-bar nav-type">
 				<span>Writing</span>
-				<span>{posts.length} items</span>
+				<span>{entries.length} items</span>
 			</div>
 			<div class="grid">
 				{
-					posts.map((post) => (
+					entries.map((entry) => (
 						<ArchiveCard
-							href={`/blog/${post.id}/`}
-							title={post.data.title}
-							kicker={dateFormat.format(post.data.pubDate)}
-							note={post.data.description}
-							image={post.data.heroImage}
+							href={entry.href}
+							title={entry.title}
+							kicker={entry.kicker}
+							note={entry.note}
+							image={entry.image}
+							external={entry.external}
 						/>
 					))
 				}
 			</div>
-			{posts.length === 0 && <p class="nav-type">Nothing published yet</p>}
+			{entries.length === 0 && <p class="nav-type">Nothing published yet</p>}
 		</main>
 		<Footer />
 		<style>
