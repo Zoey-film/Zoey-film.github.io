@@ -9,8 +9,6 @@
 	/* Surface */
 	--bg: #fdfbf9;
 	--bg-sunk: #f0ece8;
-	/* Warmer ground so album posters read as printed objects on the page. */
-	--poster-bg: #ded7c7;
 	--text: #100a0d;
 	--text-muted: #6b6469;
 	--text-faint: #9c959a;
