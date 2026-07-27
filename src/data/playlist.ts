@@ -55,6 +55,11 @@ export const tracks: Track[] = [
 		spotify: 'https://open.spotify.com/track/3h5zik31hTTat9jmpCZZNC',
 	},
 	{
+		title: '若き日の望楼',
+		artist: 'Taeko Onuki',
+		spotify: 'https://open.spotify.com/track/74KH51J0j2wE1hrWK8IfHX',
+	},
+	{
 		title: 'Bluesen',
 		artist: 'Svaneborg Kardyb',
 		spotify: 'https://open.spotify.com/track/4q4emoW3IX2eHhY3sVkudj',
