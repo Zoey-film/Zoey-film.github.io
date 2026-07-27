@@ -1,0 +1,102 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import { captions } from '../data/collection';
+
+// Everything in src/assets/collection/ is picked up automatically — drop a
+// file in the folder and it appears here. No registration step.
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+	'/src/assets/collection/*.{jpeg,jpg,png,webp,avif,gif}',
+	{ eager: true },
+);
+
+const items = Object.entries(modules)
+	.map(([path, mod]) => {
+		const file = path.split('/').pop() ?? '';
+		return { file, image: mod.default, caption: captions[file] };
+	})
+	.sort((a, b) => a.file.localeCompare(b.file));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Collection | ${SITE_TITLE}`} description="A collection of images." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="index-bar nav-type">
+				<span>Collection</span>
+				<span>{items.length} {items.length === 1 ? 'image' : 'images'}</span>
+			</div>
+
+			{
+				items.length > 0 ? (
+					<div class="collection-grid">
+						{items.map((item) => (
+							<figure>
+								<Image src={item.image} alt={item.caption ?? ''} widths={[400, 800]} />
+								{item.caption && <figcaption class="nav-type">{item.caption}</figcaption>}
+							</figure>
+						))}
+					</div>
+				) : (
+					<p class="empty nav-type">
+						Nothing here yet — drop images into <code>src/assets/collection/</code> and they will
+						appear.
+					</p>
+				)
+			}
+		</main>
+		<Footer />
+		<style>
+			.index-bar {
+				display: flex;
+				justify-content: space-between;
+				padding: 6rem 0 1.5rem;
+				color: var(--text-muted);
+			}
+
+			/* Masonry-ish columns so portrait and landscape images can sit
+			   together without being cropped to a common aspect ratio. */
+			.collection-grid {
+				column-count: 4;
+				column-gap: 14px;
+			}
+			figure {
+				break-inside: avoid;
+				margin: 0 0 14px;
+			}
+			figure :global(img) {
+				width: 100%;
+				height: auto;
+			}
+			figcaption {
+				padding-top: 0.5rem;
+				color: var(--text-faint);
+			}
+			.empty {
+				color: var(--text-faint);
+			}
+
+			@media (max-width: 900px) {
+				.index-bar {
+					padding: 3rem 0 1.25rem;
+				}
+				.collection-grid {
+					column-count: 3;
+				}
+			}
+			@media (max-width: 600px) {
+				.collection-grid {
+					column-count: 2;
+				}
+			}
+		</style>
+	</body>
+</html>
