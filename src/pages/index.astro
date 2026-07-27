@@ -1,8 +1,14 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { projects } from '../data/projects';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 
 <!doctype html>
@@ -13,37 +19,94 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<!-- The statement column: pinned left, narrow, with the rest of the
+			     page deliberately left empty. -->
+			<section class="statement justified">
+				<p>
+					Zoey Zhang is a designer and engineer working on creative tools. Her practice sits
+					between interface design and the systems underneath it — the parts that decide how a
+					tool feels to think in.
+				</p>
+				<p>
+					She is currently building <a href="https://flick.art" target="_blank" rel="noopener"
+						>Flick</a
+					>, an AI-native visual storytelling tool with a node-based canvas. Previous work spans
+					design systems, editorial tooling, and interfaces for generative models.
+				</p>
+			</section>
+
+			<!-- Index: two quiet columns of links, set in the nav type. -->
+			<section class="index">
+				<div class="index-col nav-type">
+					<span class="index-head">Projects</span>
+					{
+						projects.map((project) => (
+							<a href={project.link} target="_blank" rel="noopener">
+								{project.title}
+							</a>
+						))
+					}
+				</div>
+				<div class="index-col nav-type">
+					<span class="index-head">Writing</span>
+					{posts.slice(0, 6).map((post) => <a href={`/blog/${post.id}/`}>{post.data.title}</a>)}
+					{posts.length === 0 && <span class="empty">Nothing published yet</span>}
+				</div>
+			</section>
 		</main>
 		<Footer />
+		<style>
+			/* A narrow measure is what makes justification read — fewer words per
+			   line means wider gaps. Widen this and the effect flattens out. */
+			/* The measure is scaled with the type size. Justification depends on
+			   how many words land per line, so keeping the column at 400px while
+			   the text shrank would have flattened the gaps out. */
+			.statement {
+				max-width: 350px;
+				margin: 0 auto;
+				padding: 14rem 0 16rem;
+				line-height: 1.8;
+			}
+			.statement p {
+				margin-bottom: 1.75em;
+			}
+			.statement p:last-child {
+				margin-bottom: 0;
+			}
+
+			.index {
+				display: flex;
+				gap: var(--nav-col);
+				padding-bottom: 4rem;
+			}
+			.index-col {
+				display: flex;
+				flex-direction: column;
+				min-width: 180px;
+			}
+			.index-head {
+				color: var(--text-faint);
+				margin-bottom: 0.5rem;
+			}
+			.index-col a {
+				text-decoration: none;
+			}
+			.index-col a:hover {
+				opacity: 0.55;
+			}
+			.empty {
+				color: var(--text-faint);
+			}
+
+			@media (max-width: 900px) {
+				.statement {
+					padding: 6rem 0 7rem;
+				}
+				.index {
+					gap: 3rem;
+					flex-wrap: wrap;
+				}
+			}
+		</style>
 	</body>
 </html>

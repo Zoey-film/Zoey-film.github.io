@@ -15,42 +15,58 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
+			/* Article pages keep the paper ground but drop the grid for a
+			   single reading measure. The hero spans the full page gutter. */
 			.hero-image {
 				width: 100%;
+				aspect-ratio: 2 / 1;
+				overflow: hidden;
+				background: var(--bg-sunk);
+				margin: 3rem 0 3.5rem;
 			}
 			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+				max-width: var(--column);
+				margin-bottom: 3rem;
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0 0 0.5rem 0;
 			}
 			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+				margin-bottom: 0;
+				color: var(--text-muted);
+				font-size: var(--size-nav);
+				letter-spacing: var(--track-nav);
+				text-transform: uppercase;
 			}
-			.last-updated-on {
-				font-style: italic;
+			.prose {
+				max-width: var(--column);
+				font-family: var(--font-display);
+				line-height: 1.5;
+				color: var(--text);
+			}
+			.prose :global(h2),
+			.prose :global(h3) {
+				margin-top: 2em;
+			}
+			.prose :global(img) {
+				margin: 2em 0;
+			}
+			.back {
+				display: inline-block;
+				margin-top: 5rem;
+				font-size: var(--size-nav);
+				letter-spacing: var(--track-nav);
+				text-transform: uppercase;
+				text-decoration: none;
+				color: var(--text-muted);
+			}
+			.back:hover {
+				color: var(--text);
 			}
 		</style>
 	</head>
@@ -59,26 +75,30 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				{
+					heroImage && (
+						<div class="hero-image">
+							<Image width={1600} height={800} src={heroImage} alt="" />
+						</div>
+					)
+				}
+				<div class="title">
+					<h1>{title}</h1>
+					<div class="date">
+						<FormattedDate date={pubDate} />
+						{
+							updatedDate && (
+								<span>
+									· updated <FormattedDate date={updatedDate} />
+								</span>
+							)
+						}
+					</div>
 				</div>
 				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
 					<slot />
 				</div>
+				<a class="back" href="/blog">← Back to writing</a>
 			</article>
 		</main>
 		<Footer />

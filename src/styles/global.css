@@ -1,124 +1,230 @@
 /*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+  Fashion-house editorial layout: near-white warm ground, content pinned to
+  the page edges, a single narrow serif reading column with large negative
+  space beside it, and a multi-column masthead of small uppercase links.
+  Modeled on the typesetting of lemaire.fr — metrics and type scale only.
  */
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
+	/* Surface */
+	--bg: #fdfbf9;
+	--bg-sunk: #f0ece8;
+	--text: #100a0d;
+	--text-muted: #6b6469;
+	--text-faint: #9c959a;
+	--rule: #ddd7d3;
+
+	--accent: var(--text);
+
+	/* Layout — the page hugs its edges rather than centering a container. */
+	--page-margin: 14px;
+	--column: 420px; /* the reading measure, pinned left */
+	--nav-col: 210px; /* masthead column pitch */
+
+	/* Type */
+	--size-nav: 12px;
+	--track-nav: 0.06em;
+	/* Body sits one step above the 12px nav/wordmark size. */
+	--size-body: 14px;
+
+	color-scheme: light;
 }
+
+* {
+	box-sizing: border-box;
+}
+
 body {
-	font-family: var(--font-atkinson);
+	font-family: var(--font-body);
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background: linear-gradient(var(--gray-gradient)) no-repeat;
-	background-size: 100% 600px;
+	background: var(--bg);
+	color: var(--text);
+	font-size: var(--size-body);
+	line-height: 1.45;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 20px;
-	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+	font-synthesis: none;
 }
+
 main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
+	padding: 0 var(--page-margin) 8rem;
 }
+
+/* The narrow reading column — left-anchored, never centered. */
+.column {
+	max-width: var(--column);
+}
+
+/* Sparse image grid for the index pages — wide cells, tight gutters. */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 14px;
+}
+@media (max-width: 900px) {
+	.grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (max-width: 600px) {
+	.grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* Serif body copy. Lemaire sets this at 1.2 leading; that's too tight for
+   Hina Mincho's delicate strokes, so it runs slightly looser here. */
+.serif {
+	font-family: var(--font-display);
+	font-size: var(--size-body);
+	line-height: 1.5;
+}
+
+/* Full justification, including the last line of each paragraph — that final
+   rule is what produces the stretched-out trailing lines. Hyphenation stays
+   off so words break across gaps rather than mid-word. */
+.justified {
+	text-align: justify;
+	text-align-last: justify;
+	-moz-text-align-last: justify;
+	hyphens: none;
+}
+
+/* Small uppercase link/label — the masthead and every meta line. */
+.nav-type {
+	font-size: var(--size-nav);
+	letter-spacing: var(--track-nav);
+	text-transform: uppercase;
+	line-height: 1.9;
+	font-weight: 400;
+}
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+	font-family: var(--font-display);
+	margin: 0 0 0.6rem 0;
+	color: var(--text);
+	line-height: 1.25;
+	font-weight: 400;
+	letter-spacing: 0.01em;
 }
 h1 {
-	font-size: 3.052em;
+	font-size: 2.5rem;
 }
 h2 {
-	font-size: 2.441em;
+	font-size: 1.75rem;
 }
 h3 {
-	font-size: 1.953em;
+	font-size: 1.25rem;
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 1.05rem;
 }
-h5 {
-	font-size: 1.25em;
-}
+
 strong,
 b {
-	font-weight: 700;
+	font-weight: 600;
 }
+
 a {
-	color: var(--accent);
+	color: var(--text);
+	text-decoration: underline;
+	text-decoration-color: var(--rule);
+	text-underline-offset: 3px;
+	transition: text-decoration-color 0.15s ease;
 }
 a:hover {
-	color: var(--accent);
+	text-decoration-color: var(--text);
 }
+
 p {
 	margin-bottom: 1em;
 }
-.prose p {
-	margin-bottom: 2em;
-}
-textarea {
-	width: 100%;
-	font-size: 16px;
-}
+
+textarea,
 input {
+	font-family: inherit;
 	font-size: 16px;
+	width: 100%;
 }
+
 table {
 	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--size-nav);
 }
+th,
+td {
+	border-bottom: 1px solid var(--rule);
+	padding: 0.6em 0.75em 0.6em 0;
+	text-align: left;
+	font-weight: 400;
+}
+
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	display: block;
+}
+
+/* No webfont is loaded for code — fall back to the platform's mono stack. */
+code,
+pre,
+kbd,
+samp {
+	font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
 code {
 	padding: 2px 5px;
-	background-color: rgb(var(--gray-light));
+	background-color: var(--bg-sunk);
 	border-radius: 2px;
+	font-size: 0.8em;
 }
 pre {
-	padding: 1.5em;
-	border-radius: 8px;
+	padding: 1.25em;
+	background-color: var(--bg-sunk);
+	overflow-x: auto;
+	font-size: 0.8em;
 }
 pre > code {
 	all: unset;
 }
+
 blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
+	border-left: 1px solid var(--text);
+	padding: 0 0 0 1.5em;
+	margin: 0 0 1.4em;
+	color: var(--text-muted);
 }
+
 hr {
 	border: none;
-	border-top: 1px solid rgb(var(--gray-light));
+	border-top: 1px solid var(--rule);
+	margin: 3em 0;
 }
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
+
+.rule {
+	border: none;
+	border-top: 1px solid var(--rule);
+	margin: 0;
+}
+
+/* Below the masthead's column count, everything stacks and the reading
+   column simply fills the page. */
+@media (max-width: 900px) {
+	:root {
+		--column: 100%;
+		--size-body: 17px;
 	}
-	main {
-		padding: 1em;
+	h1 {
+		font-size: 2rem;
 	}
 }
 

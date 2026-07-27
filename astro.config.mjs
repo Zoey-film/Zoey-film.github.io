@@ -6,30 +6,32 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
+	// Pages serves this at the lowercased host regardless of how the repo
+	// name is cased. If you ever move to a differently-named repo, add:
+	// base: '/repo-name',
+	site: 'https://zoey-film.github.io',
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{
-			provider: fontProviders.local(),
-			name: 'Atkinson',
-			cssVariable: '--font-atkinson',
-			fallbacks: ['sans-serif'],
-			options: {
-				variants: [
-					{
-						src: ['./src/assets/fonts/atkinson-regular.woff'],
-						weight: 400,
-						style: 'normal',
-						display: 'swap',
-					},
-					{
-						src: ['./src/assets/fonts/atkinson-bold.woff'],
-						weight: 700,
-						style: 'normal',
-						display: 'swap',
-					},
-				],
-			},
+			// Body / UI — geometric sans.
+			provider: fontProviders.google(),
+			name: 'Jost',
+			cssVariable: '--font-body',
+			weights: [400, 500, 600, 700],
+			styles: ['normal', 'italic'],
+			subsets: ['latin'],
+			fallbacks: ['ui-sans-serif', 'system-ui', 'sans-serif'],
+		},
+		{
+			// Headings — Japanese mincho serif. Ships a single weight (400) only,
+			// so headings are set at 400 rather than faking a bold.
+			provider: fontProviders.google(),
+			name: 'Hina Mincho',
+			cssVariable: '--font-display',
+			weights: [400],
+			styles: ['normal'],
+			subsets: ['latin'],
+			fallbacks: ['ui-serif', 'Georgia', 'serif'],
 		},
 	],
 });
