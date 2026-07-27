@@ -1,47 +1,91 @@
 ---
+import type { ImageMetadata } from 'astro';
+import AlbumPoster from '../components/AlbumPoster.astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
-import { playlist } from '../data/playlist';
+import { albums } from '../data/playlist';
+import { extractPalette } from '../lib/palette';
+
+// Covers live in src/assets/albums/ and are matched to entries by filename.
+const covers = import.meta.glob<{ default: ImageMetadata }>(
+	'/src/assets/albums/*.{jpeg,jpg,png,webp,avif}',
+	{ eager: true },
+);
+
+const byFilename = new Map(
+	Object.entries(covers).map(([path, mod]) => [path.split('/').pop() ?? '', mod.default]),
+);
+
+// Accept either a share link or an embed URL, and refuse anything that isn't
+// Spotify so a stray paste can't drop an arbitrary iframe onto the page.
+function toEmbedUrl(raw: string | undefined): string | undefined {
+	if (!raw) return undefined;
+	let url: URL;
+	try {
+		url = new URL(raw);
+	} catch {
+		return undefined;
+	}
+	if (url.hostname !== 'open.spotify.com') return undefined;
+	const match = url.pathname
+		.replace(/^\/embed/, '')
+		.match(/^\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)$/);
+	return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}` : undefined;
+}
+
+// Palette extraction reads the source file, so any album whose cover is
+// missing is skipped rather than breaking the build.
+const posters = (
+	await Promise.all(
+		albums.map(async (album) => {
+			const image = byFilename.get(album.cover);
+			if (!image) {
+				console.warn(`[playlist] no cover found for "${album.title}" (${album.cover})`);
+				return null;
+			}
+			const palette = await extractPalette(`src/assets/albums/${album.cover}`);
+			return { album, image, palette, embed: toEmbedUrl(album.spotify) };
+		}),
+	)
+)
+	.filter((p) => p !== null)
+	.sort((a, b) => {
+		const t = (x: typeof a) => (x.album.releaseDate ? new Date(x.album.releaseDate).valueOf() : 0);
+		return t(b) - t(a);
+	});
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={`Playlist | ${SITE_TITLE}`} description="Music on rotation." />
+		<BaseHead title={`Playlist | ${SITE_TITLE}`} description="Albums on rotation." />
 	</head>
 	<body>
 		<Header />
 		<main>
 			<div class="index-bar nav-type">
 				<span>Playlist</span>
-				<span>{playlist.length} {playlist.length === 1 ? 'track' : 'tracks'}</span>
+				<span>{posters.length} {posters.length === 1 ? 'album' : 'albums'}</span>
 			</div>
 
 			{
-				playlist.length > 0 ? (
-					<ol class="tracks">
-						{playlist.map((track, i) => (
-							<li>
-								<span class="num nav-type">{String(i + 1).padStart(2, '0')}</span>
-								<span class="detail">
-									{track.link ? (
-										<a class="title" href={track.link} target="_blank" rel="noopener">
-											{track.title}
-										</a>
-									) : (
-										<span class="title">{track.title}</span>
-									)}
-									<span class="artist">{track.artist}</span>
-									{track.note && <span class="note">{track.note}</span>}
-								</span>
-							</li>
+				posters.length > 0 ? (
+					<div class="posters">
+						{posters.map((p) => (
+							<AlbumPoster
+								album={p.album}
+								image={p.image}
+								palette={p.palette}
+								embed={p.embed}
+							/>
 						))}
-					</ol>
+					</div>
 				) : (
 					<p class="empty nav-type">
-						Nothing here yet — add tracks in <code>src/data/playlist.ts</code>.
+						Nothing here yet — add covers to <code>src/assets/albums/</code> and entries to{' '}
+						<code>src/data/playlist.ts</code>.
 					</p>
 				)
 			}
@@ -54,58 +98,13 @@ import { playlist } from '../data/playlist';
 				padding: 6rem 0 1.5rem;
 				color: var(--text-muted);
 			}
-
-			.tracks {
-				list-style: none;
-				margin: 0;
-				padding: 0;
-				max-width: 640px;
-			}
-			.tracks li {
-				display: flex;
-				gap: 1.5rem;
-				padding: 1rem 0;
-				border-top: 1px solid var(--rule);
-			}
-			.num {
-				flex: none;
-				color: var(--text-faint);
-				padding-top: 0.15rem;
-			}
-			.detail {
-				display: flex;
-				flex-direction: column;
-				gap: 0.1rem;
-			}
-			.title {
-				font-family: var(--font-display);
-				font-size: 1.05rem;
-				line-height: 1.35;
-				align-self: flex-start;
-				text-decoration: none;
-				transition: color 0.2s ease;
-			}
-			a.title:hover,
-			a.title:focus-visible {
-				color: var(--link-hover);
-			}
-			.artist {
-				color: var(--text-muted);
-				font-size: 0.85rem;
-			}
-			.note {
-				color: var(--text-faint);
-				font-size: 0.8rem;
-				margin-top: 0.2rem;
+			.posters {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+				gap: 28px;
 			}
 			.empty {
 				color: var(--text-faint);
-			}
-
-			@media (prefers-reduced-motion: reduce) {
-				a.title::after {
-					transition: none;
-				}
 			}
 			@media (max-width: 900px) {
 				.index-bar {

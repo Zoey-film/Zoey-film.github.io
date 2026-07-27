@@ -1,17 +1,35 @@
-// Tracks shown on /playlist. Add a line per track.
+// Albums shown on /playlist, rendered as posters.
 //
-// `link` is optional — point it at Spotify, Apple Music, YouTube, wherever.
-// Tracks with a link become clickable; ones without render as plain text.
+// For each album: drop the cover image into src/assets/albums/ and add an
+// entry here whose `cover` matches the filename. The colour bar under the
+// artwork is extracted from the cover automatically — nothing to pick.
 //
-//   { title: 'Song name', artist: 'Artist', link: 'https://open.spotify.com/track/…' },
-//
-// `note` is optional too — a short line for why it's here.
+//   {
+//     title: 'Ghosts',
+//     artist: 'Hania Rani',
+//     cover: 'ghosts.jpg',
+//     tracks: ['Oltre Terra', 'Hello', 'Don\'t Break My Heart'],
+//     releaseDate: '2023-10-06',
+//     label: 'Gondwana Records',
+//     link: 'https://open.spotify.com/album/…',
+//   },
 
-export interface Track {
+export interface Album {
 	title: string;
 	artist: string;
-	link?: string;
-	note?: string;
+	/** Filename inside src/assets/albums/ */
+	cover: string;
+	tracks: string[];
+	/** ISO date, e.g. '2023-10-06'. Also controls order (newest first). */
+	releaseDate?: string;
+	label?: string;
+	/**
+	 * Spotify link (track, album, or playlist). The play button reveals a
+	 * player inside the poster; without this the button isn't shown.
+	 * Spotify's iframe can't be restyled — it's cross-origin — so it stays
+	 * hidden until asked for, and the poster does the visual work.
+	 */
+	spotify?: string;
 }
 
-export const playlist: Track[] = [];
+export const albums: Album[] = [];
