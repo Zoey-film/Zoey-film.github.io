@@ -5,7 +5,8 @@ import type { Album } from '../data/playlist';
 
 interface Props {
 	album: Album;
-	image: ImageMetadata;
+	/** Undefined when the album has no cover art yet. */
+	image?: ImageMetadata;
 	palette: string[];
 	/** Pre-validated Spotify embed URL, or undefined. */
 	embed?: string;
@@ -26,12 +27,24 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 
 <article class="poster" data-poster>
 	<div class="art">
-		<Image src={image} alt={`${album.title} by ${album.artist}`} widths={[400, 800]} />
+		{
+			image ? (
+				<Image src={image} alt={`${album.title} by ${album.artist}`} widths={[400, 800]} />
+			) : (
+				<span class="art-empty" aria-hidden="true" />
+			)
+		}
 	</div>
 
-	<div class="swatches" aria-hidden="true">
-		{palette.map((hex) => <span style={`background:${hex}`} />)}
-	</div>
+	{
+		palette.length > 0 && (
+			<div class="swatches" aria-hidden="true">
+				{palette.map((hex) => (
+					<span style={`background:${hex}`} />
+				))}
+			</div>
+		)
+	}
 
 	<div class="head">
 		<div class="names">
@@ -94,6 +107,12 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 		aspect-ratio: 1;
 		object-fit: cover;
 		display: block;
+	}
+	.art-empty {
+		display: block;
+		width: 100%;
+		aspect-ratio: 1;
+		background: rgba(0, 0, 0, 0.06);
 	}
 
 	/* Colour bar derived from the artwork. */

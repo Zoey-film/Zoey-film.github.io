@@ -17,8 +17,11 @@
 export interface Album {
 	title: string;
 	artist: string;
-	/** Filename inside src/assets/albums/ */
-	cover: string;
+	/**
+	 * Filename inside src/assets/albums/. Optional — without it the poster
+	 * renders with a plain tile and a neutral colour bar.
+	 */
+	cover?: string;
 	tracks: string[];
 	/** ISO date, e.g. '2023-10-06'. Also controls order (newest first). */
 	releaseDate?: string;
@@ -32,4 +35,14 @@ export interface Album {
 	spotify?: string;
 }
 
-export const albums: Album[] = [];
+export const albums: Album[] = [
+	{
+		// NOTE: title/artist/tracks below were read off a truncated screenshot of
+		// the Spotify player — please correct them. The `spotify` link is exact,
+		// and the player itself always shows the authoritative metadata.
+		title: 'The Sound Of',
+		artist: 'Johann Sebastian Bach',
+		tracks: ['Concerto for Keyboard'],
+		spotify: 'https://open.spotify.com/track/5u43fvet3KMNgn10z94qvP',
+	},
+];

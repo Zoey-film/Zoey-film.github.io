@@ -35,23 +35,20 @@ function toEmbedUrl(raw: string | undefined): string | undefined {
 	return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}` : undefined;
 }
 
-// Palette extraction reads the source file, so any album whose cover is
-// missing is skipped rather than breaking the build.
+// An album without cover art still gets a poster — it just renders with a
+// plain tile and no colour bar.
 const posters = (
 	await Promise.all(
 		albums.map(async (album) => {
-			const image = byFilename.get(album.cover);
-			if (!image) {
+			const image = album.cover ? byFilename.get(album.cover) : undefined;
+			if (album.cover && !image) {
 				console.warn(`[playlist] no cover found for "${album.title}" (${album.cover})`);
-				return null;
 			}
-			const palette = await extractPalette(`src/assets/albums/${album.cover}`);
+			const palette = image ? await extractPalette(`src/assets/albums/${album.cover}`) : [];
 			return { album, image, palette, embed: toEmbedUrl(album.spotify) };
 		}),
 	)
-)
-	.filter((p) => p !== null)
-	.sort((a, b) => {
+).sort((a, b) => {
 		const t = (x: typeof a) => (x.album.releaseDate ? new Date(x.album.releaseDate).valueOf() : 0);
 		return t(b) - t(a);
 	});
@@ -83,10 +80,7 @@ const posters = (
 						))}
 					</div>
 				) : (
-					<p class="empty nav-type">
-						Nothing here yet — add covers to <code>src/assets/albums/</code> and entries to{' '}
-						<code>src/data/playlist.ts</code>.
-					</p>
+					<p class="empty nav-type">Nothing here yet.</p>
 				)
 			}
 		</main>
