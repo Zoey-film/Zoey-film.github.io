@@ -18,11 +18,19 @@ const released = album.releaseDate
 	? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: '2-digit' }).format(
 			new Date(album.releaseDate),
 		)
-	: undefined;
+	: album.year
+		? String(album.year)
+		: undefined;
+
+const tracks = album.tracks ?? [];
 
 // Track list flows into columns; roughly five per column keeps the block
 // balanced the way the reference posters do.
-const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
+const columns = Math.min(3, Math.max(1, Math.ceil(tracks.length / 5)));
+
+// Long classical titles would otherwise set at display size and swamp the
+// poster, so the title steps down as it gets longer.
+const titleScale = album.title.length > 60 ? 'xs' : album.title.length > 34 ? 'sm' : 'lg';
 ---
 
 <article class="poster" data-poster>
@@ -48,7 +56,7 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 
 	<div class="head">
 		<div class="names">
-			<h2 class="album-title">{album.title}</h2>
+			<h2 class:list={['album-title', titleScale]}>{album.title}</h2>
 			<p class="artist">{album.artist}</p>
 		</div>
 		{
@@ -64,9 +72,15 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 		}
 	</div>
 
-	<ol class="tracks" style={`--track-cols:${columns}`}>
-		{album.tracks.map((track) => <li>{track}</li>)}
-	</ol>
+	{
+		tracks.length > 0 && (
+			<ol class="tracks" style={`--track-cols:${columns}`}>
+				{tracks.map((track) => (
+					<li>{track}</li>
+				))}
+			</ol>
+		)
+	}
 
 	{
 		embed && (
@@ -87,8 +101,9 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 	}
 
 	{
-		(released || album.label) && (
+		(released || album.album || album.label) && (
 			<footer class="meta">
+				{album.album && <span>{album.album}</span>}
 				{released && <span>{released}</span>}
 				{album.label && <span>{album.label}</span>}
 			</footer>
@@ -134,11 +149,20 @@ const columns = Math.min(3, Math.max(1, Math.ceil(album.tracks.length / 5)));
 	.album-title {
 		font-family: var(--font-body);
 		font-weight: 700;
-		font-size: clamp(1.5rem, 4.5vw, 2.1rem);
-		line-height: 1;
+		line-height: 1.05;
 		letter-spacing: -0.01em;
 		text-transform: uppercase;
 		margin: 0;
+	}
+	.album-title.lg {
+		font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+	}
+	.album-title.sm {
+		font-size: 1.4rem;
+	}
+	.album-title.xs {
+		font-size: 1.1rem;
+		line-height: 1.15;
 	}
 	.artist {
 		font-weight: 500;
