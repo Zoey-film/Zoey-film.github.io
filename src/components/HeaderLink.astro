@@ -13,20 +13,20 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 	<slot />
 </a>
 <style>
-	/* The header renders through mix-blend-mode: difference, so everything in
-	   it is authored white and the blend produces the visible color. A hue
-	   change on hover would be distorted by the blend (the site's red reads
-	   as teal over light ground), so hover dims instead of recoloring. */
+	/* The header renders through mix-blend-mode: difference, so authored
+	   colours arrive inverted. --link-hover-on-blend is the brand red
+	   pre-inverted against the page ground, so hovering lands on the same red
+	   used everywhere else on the site. */
 	a {
 		display: inline-block;
 		text-decoration: none;
 		color: inherit;
 		white-space: nowrap;
-		transition: opacity 0.2s ease;
+		transition: color 0.2s ease;
 	}
 	a:hover,
 	a:focus-visible {
-		opacity: 0.55;
+		color: var(--link-hover-on-blend);
 	}
 	a.active {
 		text-decoration: underline;

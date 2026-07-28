@@ -23,6 +23,14 @@
 	--accent-red: #9a2325;
 	--link-hover: var(--accent-red);
 
+	/* The header renders through mix-blend-mode: difference, which inverts
+	   whatever colour it is given. This is --accent-red pre-inverted against
+	   --bg (#fdfbf9 − #9a2325), so the blend lands back on the exact brand
+	   red over the page ground. Over dark imagery it resolves to a different
+	   tint — that variation is the point of the effect.
+	   If --bg or --accent-red change, recompute: channel = bg − accent. */
+	--link-hover-on-blend: #63d8d4;
+
 	/* Text selection */
 	--selection-bg: var(--accent-red);
 	--selection-text: #ffffff;
@@ -59,6 +67,10 @@
 	color: var(--selection-text);
 }
 
+/* Column layout so the footer sits at the bottom of the viewport on short
+   pages instead of riding up under the content. The header is position:fixed
+   and therefore out of this flow. `dvh` tracks mobile browser chrome as it
+   collapses; `vh` is the fallback for browsers without it. */
 body {
 	font-family: var(--font-body);
 	margin: 0;
@@ -72,10 +84,16 @@ body {
 	overflow-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
 	font-synthesis: none;
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
 }
 
-/* Reserves the space the fixed header no longer occupies in the flow. */
+/* Grows to absorb the leftover height, pushing the footer down. The top
+   padding reserves the space the fixed header no longer occupies. */
 main {
+	flex: 1 0 auto;
 	padding: var(--header-h) var(--page-margin) 8rem;
 }
 

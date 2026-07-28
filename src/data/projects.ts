@@ -1,7 +1,7 @@
-// Add your projects here. Both the homepage and /projects read from this list.
+// Add your projects here. Both the homepage and /works read from this list.
 //
 // For a cover image: drop the file into src/assets/ and set `cover` to its
-// filename — /projects picks it up automatically, no other code to touch.
+// filename — /works picks it up automatically, no other code to touch.
 
 export interface Project {
 	title: string;

@@ -10,6 +10,11 @@ export default defineConfig({
 	// name is cased. If you ever move to a differently-named repo, add:
 	// base: '/repo-name',
 	site: 'https://zoey-film.github.io',
+	// The page moved when its label changed to WORKS — keep the old URL alive
+	// for anyone holding a link from before the rename.
+	redirects: {
+		'/projects': '/works',
+	},
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{
