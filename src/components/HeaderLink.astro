@@ -13,23 +13,25 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 	<slot />
 </a>
 <style>
+	/* The header renders through mix-blend-mode: difference, so everything in
+	   it is authored white and the blend produces the visible color. A hue
+	   change on hover would be distorted by the blend (the site's red reads
+	   as teal over light ground), so hover dims instead of recoloring. */
 	a {
 		display: inline-block;
 		text-decoration: none;
-		color: var(--text);
+		color: inherit;
 		white-space: nowrap;
-		transition: color 0.2s ease;
+		transition: opacity 0.2s ease;
 	}
 	a:hover,
 	a:focus-visible {
-		color: var(--link-hover);
+		opacity: 0.55;
 	}
-	/* The current page keeps a static underline — it can't use the hover
-	   colour or you couldn't tell the two states apart. */
 	a.active {
 		text-decoration: underline;
 		text-underline-offset: 4px;
-		text-decoration-color: var(--text);
+		text-decoration-color: currentColor;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		a {

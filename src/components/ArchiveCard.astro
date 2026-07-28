@@ -10,18 +10,26 @@ interface Props {
 	/** Small line below the title — description or note. */
 	note?: string;
 	image?: ImageMetadata;
+	/**
+	 * CSS aspect-ratio for the tile, e.g. '3 / 4' (portrait, the default) or
+	 * '16 / 9' (landscape screenshots). Match the source image's own ratio —
+	 * a mismatch is what object-fit: cover crops away.
+	 */
+	ratio?: string;
 	external?: boolean;
 }
 
-const { href, title, kicker, note, image, external = false } = Astro.props;
+const { href, title, kicker, note, image, ratio = '3 / 4', external = false } = Astro.props;
 const linkAttrs = external ? { target: '_blank', rel: 'noopener' } : {};
 ---
 
 <a class="card" href={href} {...linkAttrs}>
-	<div class="tile">
+	<div class="tile" style={`aspect-ratio:${ratio}`}>
 		{
 			image ? (
-				<Image src={image} alt="" width={640} height={853} />
+				// Only `width` is given — Astro derives `height` from the source
+				// file's own aspect ratio, so the exported image isn't distorted.
+				<Image src={image} alt="" width={800} />
 			) : (
 				<span class="tile-empty" aria-hidden="true" />
 			)
@@ -41,7 +49,6 @@ const linkAttrs = external ? { target: '_blank', rel: 'noopener' } : {};
 		color: inherit;
 	}
 	.tile {
-		aspect-ratio: 3 / 4;
 		overflow: hidden;
 		background: var(--bg-sunk);
 	}
